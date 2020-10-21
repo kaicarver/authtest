@@ -22,5 +22,8 @@ app.set('view engine', 'hbs');
 app.get('/', (req, res) => {
     res.render('home');
 });
+app.get('/register', (req, res) => {
+    res.render('register');
+});
 
 app.listen(3000);
