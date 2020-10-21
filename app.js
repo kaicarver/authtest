@@ -2,9 +2,10 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
-const app = express();
 const crypto = require('crypto');
+
+// This will hold the users and authToken related to users
+const authTokens = {};
 
 const users = [
     // Because this test program doesn't use a persistent database,
@@ -25,6 +26,12 @@ const getHashedPassword = (password) => {
     return hash;
 }
 
+const generateAuthToken = () => {
+    return crypto.randomBytes(30).toString('hex');
+}
+
+const app = express();
+
 // To support URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -37,7 +44,7 @@ app.engine('hbs', exphbs({
 
 app.set('view engine', 'hbs');
 
-// Our requests handlers will be implemented here...
+// Requests handlers 
 
 app.get('/', (req, res) => {
     res.render('home');
@@ -45,6 +52,33 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
     res.render('login');
+});
+
+app.post('/login', (req, res) => {
+    const { email, password } = req.body;
+    const hashedPassword = getHashedPassword(password);
+
+    const user = users.find(u => {
+        return u.email === email && hashedPassword === u.password
+    });
+
+    if (user) {
+        const authToken = generateAuthToken();
+
+        // Store authentication token
+        authTokens[authToken] = user;
+
+        // Setting the auth token in cookies
+        res.cookie('AuthToken', authToken);
+
+        // Redirect user to the protected page
+        res.redirect('/protected');
+    } else {
+        res.render('login', {
+            message: 'Invalid username or password',
+            messageClass: 'alert-danger'
+        });
+    }
 });
 
 app.get('/register', (req, res) => {
