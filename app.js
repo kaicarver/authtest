@@ -146,4 +146,21 @@ app.get('/protected', (req, res) => {
     }
 });
 
+// Another way to do the same thing:
+// authentication implemented on routes as middleware
+const requireAuth = (req, res, next) => {
+    if (req.user) {
+        next();
+    } else {
+        res.render('login', {
+            message: 'Please login to continue',
+            messageClass: 'alert-danger'
+        });
+    }
+};
+
+app.get('/protected2', requireAuth, (req, res) => {
+    res.render('protected');
+});
+
 app.listen(3000);
