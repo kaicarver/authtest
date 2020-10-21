@@ -38,6 +38,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // To parse cookies from the HTTP Request
 app.use(cookieParser());
 
+// To inject the user to the request
+app.use((req, res, next) => {
+    // Get auth token from the cookies
+    const authToken = req.cookies['AuthToken'];
+
+    // Inject the user to the request
+    req.user = authTokens[authToken];
+
+    next();
+});
+
 app.engine('hbs', exphbs({
     extname: '.hbs'
 }));
@@ -119,6 +130,17 @@ app.post('/register', (req, res) => {
     } else {
         res.render('register', {
             message: 'Password does not match.',
+            messageClass: 'alert-danger'
+        });
+    }
+});
+
+app.get('/protected', (req, res) => {
+    if (req.user) {
+        res.render('protected');
+    } else {
+        res.render('login', {
+            message: 'Please login to continue',
             messageClass: 'alert-danger'
         });
     }
