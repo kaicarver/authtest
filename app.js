@@ -163,4 +163,7 @@ app.get('/protected2', requireAuth, (req, res) => {
     res.render('protected');
 });
 
-app.listen(3000);
+const port = 3000;
+
+app.listen(port, 
+    () => console.log(`Hi, check out http://localhost:${port}/`));
