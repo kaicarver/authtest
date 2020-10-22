@@ -14,6 +14,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.get('/book', (req, res) => {
+  res.json(books);
+});
+
 app.post('/book', (req, res) => {
   const book = req.body;
 
