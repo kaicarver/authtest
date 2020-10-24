@@ -163,6 +163,10 @@ app.get('/protected2', requireAuth, (req, res) => {
     res.render('protected');
 });
 
+app.get('/unprotected', (req, res) => {
+    res.render('unprotected');
+});
+
 const port = 3000;
 
 app.listen(port, 
